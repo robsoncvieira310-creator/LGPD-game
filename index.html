@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LGPD: O Desafio da Protecao de Dados</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- TELA INICIAL -->
+    <div id="screen-start" class="screen active">
+        <div class="container">
+            <div class="logo">
+                <div class="logo-icon">&#128274;</div>
+                <h1>LGPD</h1>
+                <p class="subtitle">O Desafio da Protecao de Dados</p>
+            </div>
+            <div class="menu">
+                <h2>Escolha o modo de jogo:</h2>
+                <button onclick="startGame('solo')" class="btn btn-primary">
+                    &#128100; Modo Solo
+                    <span>Jogue contra o computador</span>
+                </button>
+                <button onclick="showMultiplayerSetup()" class="btn btn-secondary">
+                    &#128101; Modo Multiplayer
+                    <span>Jogue com 2 a 6 jogadores</span>
+                </button>
+                <button onclick="showRules()" class="btn btn-outline">
+                    &#128214; Ver Regras
+                </button>
+            </div>
+            <div class="footer-info">
+                <p>Disciplina: Qualidade e Auditoria de TI</p>
+                <p>Tema: LGPD - Lei Geral de Protecao de Dados</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- TELA DE CONFIGURACAO MULTIPLAYER -->
+    <div id="screen-setup" class="screen">
+        <div class="container">
+            <h2>Configurar Jogo Multiplayer</h2>
+            <div class="setup-form">
+                <label>Numero de jogadores:</label>
+                <div class="player-count-selector">
+                    <button onclick="changePlayerCount(-1)" class="btn-small">-</button>
+                    <span id="player-count">2</span>
+                    <button onclick="changePlayerCount(1)" class="btn-small">+</button>
+                </div>
+                <div id="player-names" class="player-names">
+                    <!-- Preenchido via JS -->
+                </div>
+                <button onclick="startMultiplayer()" class="btn btn-primary">Iniciar Jogo</button>
+                <button onclick="showScreen('screen-start')" class="btn btn-outline">Voltar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TELA DE REGRAS -->
+    <div id="screen-rules" class="screen">
+        <div class="container">
+            <h2>Regras do Jogo</h2>
+            <div class="rules-content">
+                <div class="rule-section">
+                    <h3>&#127919; Objetivo</h3>
+                    <p>Seja o primeiro jogador a percorrer todo o tabuleiro e acumular pelo menos <strong>100 pontos</strong> de conformidade LGPD.</p>
+                </div>
+                <div class="rule-section">
+                    <h3>&#127922; Como Jogar</h3>
+                    <ol>
+                        <li>Cada jogador comeca na posicao inicial com 0 pontos</li>
+                        <li>No seu turno, clique em <strong>"Rolar Dado"</strong></li>
+                        <li>Mova sua peca pelo numero de casas indicado no dado</li>
+                        <li>Responda a pergunta ou desafio da casa onde caiu</li>
+                        <li>Ganhe ou perca pontos de acordo com sua resposta</li>
+                    </ol>
+                </div>
+                <div class="rule-section">
+                    <h3>&#127912; Tipos de Casas</h3>
+                    <ul>
+                        <li><span class="house-green">&#9632;</span> <strong>Verde - Pergunta:</strong> Responda corretamente e ganhe +10 pontos</li>
+                        <li><span class="house-blue">&#9632;</span> <strong>Azul - Desafio:</strong> Resolva o cenario e ganhe +15 pontos</li>
+                        <li><span class="house-yellow">&#9632;</span> <strong>Amarelo - Evento:</strong> Evento aleatorio (pontos positivos ou negativos)</li>
+                        <li><span class="house-red">&#9632;</span> <strong>Vermelho - Multa:</strong> Perca -10 pontos (simula multa da ANPD)</li>
+                        <li><span class="house-gold">&#9733;</span> <strong>Dourado - Bonus:</strong> Ganhe +20 pontos extras</li>
+                    </ul>
+                </div>
+                <div class="rule-section">
+                    <h3>&#127942; Vitoria</h3>
+                    <p>O jogo termina quando um jogador chega ao final do tabuleiro. O vencedor e o jogador com mais pontos. Se nenhum jogador tiver 100+ pontos, o jogo continua ate que todos cheguem ao final.</p>
+                </div>
+            </div>
+            <button onclick="showScreen('screen-start')" class="btn btn-primary">Voltar ao Menu</button>
+        </div>
+    </div>
+
+    <!-- TELA PRINCIPAL DO JOGO -->
+    <div id="screen-game" class="screen">
+        <div class="game-container">
+            <!-- Placar -->
+            <div class="scoreboard">
+                <h3>Placar</h3>
+                <div id="scoreboard-list" class="scoreboard-list">
+                    <!-- Preenchido via JS -->
+                </div>
+            </div>
+
+            <!-- Tabuleiro -->
+            <div class="board-area">
+                <div id="board" class="board">
+                    <canvas id="board-canvas"></canvas>
+                </div>
+            </div>
+
+            <!-- Controles -->
+            <div class="controls">
+                <div class="current-player">
+                    <span>Vez de: </span>
+                    <strong id="current-player-name">Jogador 1</strong>
+                </div>
+                <button id="btn-roll" onclick="rollDice()" class="btn btn-primary btn-dice">
+                    &#127922; Rolar Dado
+                </button>
+                <div id="dice-display" class="dice-display">
+                    <div id="dice" class="dice">?</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE PERGUNTA -->
+    <div id="modal-question" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="modal-type" class="modal-badge">Pergunta</span>
+                <span id="modal-points" class="modal-points">+10 pts</span>
+            </div>
+            <div id="modal-question-text" class="modal-question">
+                <!-- Preenchido via JS -->
+            </div>
+            <div id="modal-options" class="modal-options">
+                <!-- Preenchido via JS -->
+            </div>
+            <div id="modal-feedback" class="modal-feedback hidden">
+                <!-- Feedback apos responder -->
+            </div>
+            <div class="modal-actions">
+                <button id="btn-answer" onclick="submitAnswer()" class="btn btn-primary">Confirmar Resposta</button>
+                <button id="btn-next" onclick="closeModal()" class="btn btn-primary hidden">Continuar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE EVENTO -->
+    <div id="modal-event" class="modal">
+        <div class="modal-content modal-event">
+            <div id="event-icon" class="event-icon">&#128161;</div>
+            <div id="event-text" class="event-text">
+                <!-- Preenchido via JS -->
+            </div>
+            <div id="event-points" class="event-points">
+                <!-- Preenchido via JS -->
+            </div>
+            <button onclick="closeEventModal()" class="btn btn-primary">Continuar</button>
+        </div>
+    </div>
+
+    <!-- TELA DE VITORIA -->
+    <div id="screen-victory" class="screen">
+        <div class="container">
+            <div class="victory">
+                <div class="trophy">&#127942;</div>
+                <h1>Parabens!</h1>
+                <h2 id="winner-name">Jogador 1</h2>
+                <p>venceu o jogo!</p>
+                <div id="final-scores" class="final-scores">
+                    <!-- Preenchido via JS -->
+                </div>
+                <button onclick="resetGame()" class="btn btn-primary">Jogar Novamente</button>
+                <button onclick="showScreen('screen-start')" class="btn btn-outline">Voltar ao Menu</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/questions.js"></script>
+    <script src="js/board.js"></script>
+    <script src="js/dice.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>
